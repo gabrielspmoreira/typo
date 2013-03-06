@@ -546,6 +546,28 @@ describe Admin::ContentController do
       end
     end
 
+    describe 'merge action' do
+      before do
+        @article1 = Factory(:article, :title => 'Artigo 1', :body => 'Este e o artigo 1', :author => @user)
+        Article.create!(@article1.attributes.merge(:guid => nil))
+        @article2 = Factory(:article, :title => 'Artigo 2', :body => 'Este e o artigo 2', :author => @user)
+        Article.create!(@article2.attributes.merge(:guid => nil))
+      end
+
+      it 'should merge two articles' do
+        lambda do
+          post :merge, 'article' => @article1.id, 'merge_with' => @article2.id
+        end.should change(Article, :count).by(1)
+
+        merged_article = Article.last
+        merged_article.should_not == @article1
+        merged_article.should_not == @article2
+        merged_article.title.should == 'Artigo 1 | Artigo 2'
+        merged_article.body.should == 'Este e o artigo 1 | Este e o artigo 2'
+        merged_article.user.should == @article1.user
+      end
+    end
+
     describe 'resource_add action' do
 
       it 'should add resource' do

@@ -17,9 +17,10 @@ Given /^the blog is set up$/ do
                 :state => 'active'})
 
 
-  article1 = Article.create(:id => 1, :title => "Article 1 title", :body => "article 1 text", :author => admin, :published => false)
-  article2 = Article.create(:id => 2, :title => "Article 2 title", :body => "article 2 text", :author => admin, :published => false)
-  article3 = Article.create(:id => 3, :title => "Article 3 title", :body => "article 3 text", :author => publisher, :published => false)
+  #@article1 = Factory(:article, :title => 'Artigo 1', :body => 'Este e o artigo 1', :author => admin)
+  @article1 = Article.create!(:title => 'Artigo 1', :body => 'Este e o artigo 1', :author => admin, :published => true)
+  #@article2 = Factory(:article, :title => 'Artigo 2', :body => 'Este e o artigo 2', :author => publisher)
+  @article2 = Article.create!(:title => 'Artigo 2', :body => 'Este e o artigo 2', :author => publisher, :published => true)
 end
 
 And /^I am logged as (.*) into the admin panel$/ do |user|
@@ -32,4 +33,26 @@ And /^I am logged as (.*) into the admin panel$/ do |user|
   else
     assert page.has_content?('Login successful')
   end
+end
+
+When /^I merge two articles$/ do
+  @new_article = @article1.merge_with(@article2.id)
+end
+
+Then /^new article should have text from both articles$/ do
+  @new_article.body.should include(@article1.body)
+  @new_article.body.should include(@article2.body)
+end
+
+Then /^new article should have one author$/ do
+  @new_article.author.should == @article1.author
+end
+
+Then /^new article should have all comments from original articles$/ do
+  pending # express the regexp above with the code you wish you had
+end
+
+Then /^the title of new article should contain original articles title$/ do
+  @new_article.title.should include(@article1.title)
+  @new_article.title.should include(@article2.title)
 end

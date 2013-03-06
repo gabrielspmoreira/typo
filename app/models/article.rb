@@ -416,6 +416,14 @@ class Article < Content
     user.admin? || user_id == user.id
   end
 
+  def merge_with(article_id)
+    merge_with_article = Article.find(article_id)
+    merged_article = self.attributes.merge(:title => "#{self.title} | #{merge_with_article.title}",
+                                           :body => "#{self.body} | #{merge_with_article.body}", 
+                                           :guid => nil)
+    Article.create!(merged_article)
+  end
+
   protected
 
   def set_published_at

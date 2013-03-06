@@ -630,5 +630,39 @@ describe Article do
     end
 
   end
+
+  describe "merge article" do
+    before do
+      article1_mock = Factory(:article, :title => 'Artigo 1', :body => 'Este e o artigo 1', :author => @user)
+      @article1 = Article.new(article1_mock.attributes.merge(:guid => nil))
+      #comment1 = Factory.build(:comment, :article => @article1)
+      #@article1.comments.build(comment1)
+      #@article1.comments.build(:author => @user, :user => @user, :body => 'Comentario 2')
+      @article1.save!
+      #puts @article1.comments.inspect
+      @article2 = Factory(:article, :title => 'Artigo 2', :body => 'Este e o artigo 2', :author => @user)
+      Article.create!(@article2.attributes.merge(:guid => nil))
+    end
+
+    it "should merge articles" do   
+      merged_article  = nil
+      lambda do
+        merged_article = @article1.merge_with(@article2.id)
+      end.should change(Article, :count).by(1)
+
+      merged_article.should_not == @article1
+      merged_article.should_not == @article2
+      merged_article.title.should == 'Artigo 1 | Artigo 2'
+      merged_article.body.should == 'Este e o artigo 1 | Este e o artigo 2'
+      merged_article.user.should == @article1.user
+    end
+
+    it "should union comments from merged articles" do   
+      pending
+      merged_article = @article1.merge_with(@article2.id)
+
+      merged_article.comments.count {|comment| @article1.comments.include?(comment) }.should == 2
+    end
+  end
 end
 
