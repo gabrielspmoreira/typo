@@ -428,7 +428,9 @@ class Article < Content
 
     new_article.save!
 
+    self.reload
     self.destroy
+    merge_with_article.reload
     merge_with_article.destroy
 
     new_article
