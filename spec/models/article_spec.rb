@@ -648,7 +648,7 @@ describe Article do
       merged_article  = nil
       lambda do
         merged_article = @article1.merge_with(@article2.id)
-      end.should change(Article, :count).by(1)
+      end.should change(Article, :count).by(-1)
 
       merged_article.should_not == @article1
       merged_article.should_not == @article2

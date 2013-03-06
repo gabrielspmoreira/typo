@@ -421,6 +421,10 @@ class Article < Content
     merged_article = self.attributes.merge(:title => "#{self.title} | #{merge_with_article.title}",
                                            :body => "#{self.body} | #{merge_with_article.body}", 
                                            :guid => nil)
+
+    self.destroy
+    merge_with_article.destroy
+
     Article.create!(merged_article)
   end
 
