@@ -422,10 +422,16 @@ class Article < Content
                                            :body => "#{self.body} | #{merge_with_article.body}", 
                                            :guid => nil)
 
+    new_article = Article.create!(merged_article)
+
+    new_article.comments << [self.comments, merge_with_article.comments]
+
+    new_article.save!
+
     self.destroy
     merge_with_article.destroy
 
-    Article.create!(merged_article)
+    new_article
   end
 
   protected
